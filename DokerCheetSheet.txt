@@ -1,0 +1,69 @@
+
+
+
+Docker: >>>>>>
+
+
+Start Docker Quick Start Terminal (In case running Docker image in Windows 10 Home)
+
+>> Rmv all images
+docker rmi $(docker images -q)
+
+>> Build an Image
+docker build --no-cache -t mydockerapp:v1 .
+
+>> Run an Image
+docker run -p 8080:80 mydockerapp:v1
+
+[Note 80 is the port that u EXPOSED in Dockerfile]
+
+How to check your docker toolbox IP:
+>> docker-machine env
+
+Sample output: 
+-------------------------------
+$ docker-machine env
+export DOCKER_TLS_VERIFY="1"
+export DOCKER_HOST="tcp://192.168.99.100:2376"
+export DOCKER_CERT_PATH="C:\Users\Rimbik\.docker\machine\machines\default"
+export DOCKER_MACHINE_NAME="default"
+export COMPOSE_CONVERT_WINDOWS_PATHS="true"
+# Run this command to configure your shell:
+# eval $("D:\Docker\docker-machine.exe" env)
+----------------------------------------------------------------------------
+Now you know your DockerIP is: 192.168.99.100
+Ping it from your local dev machine (outside of docker toolbox terminal) - It must ping
+
+Browse in Browser:
+http://192.168.99.100:8080/WeatherForecast
+
+>> Incase go step back to folder (In Docker Toolbox)
+cd ../
+
+
+SAMPLE DOCKER FILE:
+===================
+#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
+WORKDIR /app
+EXPOSE 80
+EXPOSE 443
+
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
+WORKDIR /src
+COPY  *.csproj ./
+RUN dotnet restore
+
+COPY . .
+WORKDIR "/src"
+RUN dotnet build "DockerApp.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "DockerApp.csproj" -c Release -o /app/publish
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "DockerApp.dll"]
+---------------------------------------------------------------------------
