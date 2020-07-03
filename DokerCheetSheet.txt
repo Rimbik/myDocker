@@ -67,3 +67,6 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "DockerApp.dll"]
 ---------------------------------------------------------------------------
+
+>> Know PORTS open in your computer
+c:\> netstat -a -n -o
