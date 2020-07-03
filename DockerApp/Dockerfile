@@ -14,7 +14,7 @@ COPY . ./
 RUN dotnet publish -c Release -o out
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster-slim
 WORKDIR /app
 COPY --from=base /app/publish .
 ENTRYPOINT ["dotnet", "DockerApp.dll"]
